@@ -6,6 +6,7 @@
 
 # raw js
 **/*.js
+!/config
 
 # misc
 .DS_Store
