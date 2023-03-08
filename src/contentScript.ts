@@ -15,7 +15,6 @@ function updateMoneyValue(mutationList: MutationRecord[], observer: MutationObse
 
   // Set updated value
   const newValue: string = getTimeMoneyValue(value);
-  console.log(newValue);
   if(moneySpan.innerHTML !== newValue) moneySpan.innerHTML = newValue;
 }
 
@@ -27,35 +26,36 @@ function getTimeMoneyValue(str: string): string {
   return "$" + (hours * salary).toFixed(2);
 }
 
-// Wait for post-load page modification before getting elements
-setTimeout(() => {
-  const times: HTMLCollectionOf<Element> = document.getElementsByClassName("cl-input-time-picker-sum");
+function init() {
+    const times: HTMLCollectionOf<Element> = document.getElementsByClassName("cl-input-time-picker-sum");
+    
+    for (let i = 0; i < times.length; i++) {
+      let value: string;
+      const element = times.item(i);
+      if(element === null) return;
+      const parent = element.parentElement;
+      if(parent === null) return;
   
-  for (let i = 0; i < times.length; i++) {
-    let value: string;
-    const element = times.item(i);
-    if(element === null) return;
-    const parent = element.parentElement;
-    if(parent === null) return;
+      if(i === 0) value = (element as HTMLSpanElement).innerHTML
+      else value = (element as HTMLInputElement).value
+  
+      const moneyElement = document.createElement('span') as HTMLSpanElement;
+      moneyElement.innerHTML = getTimeMoneyValue(value);
+      moneyElement.id = 'money-span-' + i;
+      // TODO: Position moneyElement centered
+      
+      // Create an observer instance linked to the callback function
+      const observer = new MutationObserver(updateMoneyValue);
+      observer.observe(parent, {
+        subtree: true,
+        characterData: true
+      });
+      
+      parent.prepend(moneyElement);
+    }
+}
 
-    if(i === 0) value = (element as HTMLSpanElement).innerHTML
-    else value = (element as HTMLInputElement).value
+document.addEventListener('DOMContentLoaded', init);
 
-    const moneyElement = document.createElement('span') as HTMLSpanElement;
-    moneyElement.innerHTML = getTimeMoneyValue(value);
-    moneyElement.id = 'money-span-' + i;
-
-    // Create an observer instance linked to the callback function
-    const observer = new MutationObserver(updateMoneyValue);
-    observer.observe(parent, {
-      subtree: true,
-      characterData: true
-    });
-
-    // element?.addEventListener('input', updateMoneyValue);
-    parent.prepend(moneyElement);
-    // element?.insertAdjacentElement("beforebegin", moneyElement);
-    // const parent = element?.parentElement;
-    // console.dir(parent);
-  }
-}, 2000);
+// Wait for post-load page modification before getting elements
+setTimeout(init, 2000);

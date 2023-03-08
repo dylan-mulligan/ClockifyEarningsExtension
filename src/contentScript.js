@@ -16,7 +16,6 @@ function updateMoneyValue(mutationList, observer) {
         return;
     // Set updated value
     const newValue = getTimeMoneyValue(value);
-    console.log(newValue);
     if (moneySpan.innerHTML !== newValue)
         moneySpan.innerHTML = newValue;
 }
@@ -26,8 +25,7 @@ function getTimeMoneyValue(str) {
     const salary = 45.0;
     return "$" + (hours * salary).toFixed(2);
 }
-// Wait for post-load page modification before getting elements
-setTimeout(() => {
+function init() {
     const times = document.getElementsByClassName("cl-input-time-picker-sum");
     for (let i = 0; i < times.length; i++) {
         let value;
@@ -44,16 +42,16 @@ setTimeout(() => {
         const moneyElement = document.createElement('span');
         moneyElement.innerHTML = getTimeMoneyValue(value);
         moneyElement.id = 'money-span-' + i;
+        // TODO: Position moneyElement centered
         // Create an observer instance linked to the callback function
         const observer = new MutationObserver(updateMoneyValue);
         observer.observe(parent, {
             subtree: true,
             characterData: true
         });
-        // element?.addEventListener('input', updateMoneyValue);
         parent.prepend(moneyElement);
-        // element?.insertAdjacentElement("beforebegin", moneyElement);
-        // const parent = element?.parentElement;
-        // console.dir(parent);
     }
-}, 2000);
+}
+document.addEventListener('DOMContentLoaded', init);
+// Wait for post-load page modification before getting elements
+setTimeout(init, 2000);
