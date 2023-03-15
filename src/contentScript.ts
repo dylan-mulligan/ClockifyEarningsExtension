@@ -17,21 +17,27 @@ function updateTrackerValue(mutationList: MutationRecord[], observer: MutationOb
 }
 
 function updateEntryValue(mutationList: MutationRecord[], observer: MutationObserver) {
-  const timeElement:  Element | null = <Element | null> mutationList[0].target.parentNode;
+  const parent:  Element | null = <Element | null> mutationList[0].target;
+  console.log("parent");
+  console.dir(parent);
+  if(parent == null) return;
+  const timeElement:  Element | null = parent.lastElementChild;
+  console.log("timeElement");
   console.dir(timeElement);
   if(timeElement === null) return;
-  const moneySpan: Element | null = <Element | null> timeElement.previousSibling;
+  const moneySpan: Element | null = <Element | null> parent.firstElementChild;
+  console.log("moneySpan");
   console.dir(moneySpan);
   if(moneySpan === null) return;
   
-  let value: string;
-
   // Get updated value
-  value = (timeElement as HTMLInputElement).value;
-  console.dir(value);
+  const timeValue = (timeElement as HTMLInputElement).value;
+  console.log("timeValue");
+  console.dir(timeValue);
 
   // Set updated value
-  const newValue: string = getTimeMoneyValue(value);
+  const newValue: string = getTimeMoneyValue(timeValue);
+  console.log("newValue");
   console.dir(newValue);
   if(moneySpan.innerHTML !== newValue) moneySpan.innerHTML = newValue;
 }
@@ -76,6 +82,7 @@ function modifyEntries() {
   // Get tracker cards (1 per day)
   const trackerCards:HTMLCollectionOf<Element> = container.getElementsByClassName("cl-card");
   if(trackerCards.length === 0) return;
+  console.log(trackerCards.length);
 
   // Iterate over tracker cards
   for (const tc of trackerCards) {
